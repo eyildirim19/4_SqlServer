@@ -1,0 +1,101 @@
+veri (data)
+
+veritabanı (database) veya ilişkisel veritabanı (relational database)
+	--table (tablo) => row (satır), column (sutun)
+
+veritabanı yönetim sistemi (database management system) (mssql server,oracle,mysql)
+
+mssql server (windows işletim sisteminin bir servisidir)
+
+ssms (Sql server Management Studio) => mssqlserveri yönetmek için kulllandığımız arayüzdür..
+
+
+=> Database Admin 
+=> Database User   (Query yazan)
+
+
+SQL (Structured Query Language) => veritabanı yönetim sistemeni kullandığımız sorgu dilidir..
+	-TSQL (Transact Sql) => Microsofty tarafından geliştirilmiştir. MSSQL Server DBMS ile kullanılır)
+	-PLSQL (Oracle firması tarafından geliştirmiştir. Oracle Dbms ile kullanılır)
+
+ - TSQL ;
+	-DML (Data Manupilation Language) =>  select, update,insert,delete
+	-DDL (Data Defination Language)   =>  create, alter,drop
+	-DCL (Data Control Language)      =>  deny, grant ,revoke
+
+
+
+Anahtar Kavramı 
+Primary key (PK) (birincil alan) => tablodaki alanları temsil eden diğer alanların bağımlı olduğu alandır. Yani anahtar alandır)
+Foreign key (FK) (yabancıl alan)=>  başka bir tablonun pk'sini temsil eder...
+
+
+Tablo oluştuturken normalizasyon (ayrıştırma) kuralları uygulanmalıdır.... (tablodaki verilerin tekrarın kaçınmak için kullanılır. Yani bazlı tekrar olmalalıdır. çünkü satır bazlı tekrar veri güncellenmesi ve veri silinmesi problemleri çıkarır.). 
+	1.Nf (Normal Form)  
+			 - veriler alanlarda özel karakterle ile ayrılmamalı. bir alanda bir veri tutulmalı 
+			 - tekrar eden satır ve sütun yapısı olmamalı 
+			 - tabloda bir anahtar(birincil alan) alan olmalı. 
+
+
+
+ 	2.Nf (Normal Form)
+			- tablo 1.nf uygun olmalıdır
+			-anahtar olmayan diğer alanlar bu alana bağımlı olmalı.(çünkü Kayıt ararken alanlardan değilde birincil alandan gidilir) (yani tabloda bir primary key olmalı).
+			-tablodaki tekrarları ortadan kaldırmak için tablolar ayrıştırılmalı. ve diğer tabloyu temsil eden yabancıl alanlar tanımlanmalı.
+			Örn;
+			User 		=> Adi,SoyAdi,TcNO (PK)
+			UserPhone 	=> Phone,TcNo (FK)
+			Not : 2. NF'de tablolar ayrıştırıldığı için veri tutarsızlığı olabilir.yani UserPhone tablosuna TCNOsu User tablosunda olmayan bir kayıt girilirse veya TCNo su userPhone tablosunda olan bir User silinirse burada veri tutarsızlığı ortaya çıkmaktadır. Bu veri tutarsızlığını ortadan kaldırmak için tablolar ilişkilendirilir. Bu konuya aşağıda detaylı incelidik;
+			
+	3.Nf (Normal Form)
+			- 2. NF uygun olmalıdır.
+			- Tabloda 1 den fazla birincil alan varsa bu alanlardaki kısmi bağımlılık ortadan kaldırılmalı
+			- Duruma göre ara tablo tanımlanır;
+				Dersler 	=> DersNo,Kredi,DersAdi
+				Ogrenciler	=> OgrenciNo,Adi,SoyAdi
+				OgrenciDers	=> DersNo,OgrenciNo     (ara tablo)
+
+
+Not : Tablolarımızdaki anahtar alanlarımızı isimlendirirken ID (Identification) ismini kullanılmasına dikkat edelim.
+
+
+Tablolarda ilişkilendirme : tablolar arası veri bütünlüğünü sağlamak için kullanılır. tablolarda gereksiz veri eklenmesi veya ana tablodaki kaydın silinip ilişki tablosundaki kaydın durması gibi durumlar veri tutarsızlığına örnektir. tablodaki ilişkili kayıtlar birebir eşleşmelidir.
+		3 adet ilişki durumu vardır;
+		- bire bir 	=> her iki tabloda tek bir kaydın olmasıdır. yani iki adet pk'nin olması gibi;
+					Kullanıcı 	=>(ID,UserName,Password)
+					KullanıcıDetay  =>(ID,FirstName,LastName,BirthDate,Gender) 
+Yukarıdaki örnekte bir kullanıcının bir detayı olduğu için bu ilişki türü birebir ilişkidir.
+		- bire çok       => bir tablodaki kaydın başka tabloda çok olması örneğidir. 
+					User 		=> (ID,FirstName,LastName)
+					UserPhone	=> (UserID,PhoneNumber)
+Yukarıdaki örnekte bir kullacının birden fazla telefon numarası olabilir. Bu duruma bireçok ilişki 
+ 		- çoka çok	=> burada ara tablolar söz konusudur;
+					Dersler 	=> ID,Kredi,DersAdi
+					Ogrenciler	=> ID,Adi,SoyAdi
+					OgrenciDers	=> DersID,OgrenciID     (ara tablo)
+Yukarıdaki örnekte bir dersi birden fazla öğrenci alabilir. Bir öğrenci birden fazla alabilir. bu durum çoka çok ilişkiye örnektir.
+
+İlişkilendirmenin faydası; veri bütünlüğü (verilerin eşleşmesi) sağlamaktır. çünkü veri eklemede beslenen (alt) tabloya besleyen (üst) tabloda olmayan bir kayıt girilebilir veya üst tablodaki kayıt eğer alt tabloda varken silinmeye çalışılırsa yine veri bütünlüpü bozulacaktır. Kayıtlar her iki tabloda da eşleşmelidir....
+
+İlişkendirmenin zararı : sürekli arkada tarafta kayıtlar kontrol edeleceği için veritabanı biraz yavaşlar. buda sistemin yavaşlamasına neden olur. Bu yüzden bazı sistemlerde mantıken ilişkilendirme yapılir ancak fiziki ilişki yapılmaz. 
+
+
+
+--------------------------------------------------------------------------- sql server ile tablo oluşturma-------------------------------------------------------------
+Tablo oluştururken ID alanlarımıza ıdentity column özelliğini uygularsak bu sayede bu alanların değerleri sql server tarafından otomatik ve sıralı şekilde verilecektir. Bu bizim ID alanlarına değer vermemizin önüne geçektir. Bu yüzden daha önce bu alana x değerini verdikmi vs. gibi taramalar yapmamıza gerek kalmayacaktır...
+
+
+
+
+SQL SERVER CONSTRARINT KONUSU ARAŞTIRINIZ...
+
+
+
+
+
+	
+
+
+
+
+
